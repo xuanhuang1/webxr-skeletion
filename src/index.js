@@ -209,14 +209,14 @@ function init() {
 	document.onclick = function changeContent() {
     	if (!created) {
         	created = true;
-        	let video = document.createElement("video");
+        	/*let video = document.createElement("video");
         	video.setAttribute("src","assets/sintel.mp4");
         	video.setAttribute("muted","muted");
         	document.body.appendChild(video);
         	video.play().catch((e)=>{ console.log(e)});
 
         	plane.material.map = new THREE.VideoTexture( video );
-        	plane.material.needsUpdate = true;
+        	plane.material.needsUpdate = true;*/
         }
     }
 	
