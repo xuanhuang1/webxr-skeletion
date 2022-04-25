@@ -140,14 +140,23 @@ function init() {
 	} );
 
 	const hemLight = new THREE.HemisphereLight( 0x808080, 0x606060 );
+	const plight = new THREE.SpotLight( 0xffffff, 1);
 
-	scene.add( light, hemLight );
+	plight.castShadow = true;
+	plight.angle = 0.25;
+	plight.penumbra = 0.2;
+	plight.decay = 2;
+	plight.distance = 15;
+	plight.position.set( 0, 6, -3 );
+	scene.add( plight );
+	//const spotLightHelper = new THREE.SpotLightHelper( plight );
+	//scene.add( spotLightHelper );
 
 	// CONTROLLERS
 
 	controls = new OrbitControls( camera, renderer.domElement );
-	camera.position.set( 0, 1.6, 0 );
-	controls.target = new THREE.Vector3( 0, 1.2, -1 );
+	camera.position.set( 0, 1.6, 2.5 );
+	controls.target = new THREE.Vector3( 0, 1.6, 0 );
 	controls.update();
 
 	//
@@ -176,14 +185,47 @@ function init() {
 
 	intersectionRoom = new THREE.Mesh(
 		new THREE.BoxGeometry( 6, 6, 6, 10, 10, 10 ).translate( 0, 3, 0 ),
-		new THREE.MeshBasicMaterial( {
-			side: THREE.BackSide,
-			transparent: true,
-			opacity: 0
+		new THREE.MeshPhongMaterial( {
+			color: 0x808080,
+			side: THREE.BackSide
+			//transparent: false,
+			//opacity: 1
 		} )
-	);
+		//matFloor
+		);
+	intersectionRoom.receiveShadow = true;
 
-	scene.add( room, intersectionRoom );
+	const plane = new THREE.Mesh( new THREE.PlaneGeometry( 3, 2 ).translate( 0, 3, -2.5 ), 
+			new THREE.MeshBasicMaterial( {color: 0x808080} ) );
+
+
+	//video.play();
+	//video.addEventListener( 'play', function () {
+
+	//	this.currentTime = 3;
+
+	//} );
+	let created = false;
+	document.onclick = function changeContent() {
+    	if (!created) {
+        	created = true;
+        	let video = document.createElement("video");
+        	video.setAttribute("src","assets/sintel.mp4");
+        	video.setAttribute("muted","muted");
+        	document.body.appendChild(video);
+        	video.play().catch((e)=>{ console.log(e)});
+
+        	plane.material.map = new THREE.VideoTexture( video );
+        	plane.material.needsUpdate = true;
+        }
+    }
+	
+
+	//const plane = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ).translate( 0, 3, -2.5 ), 
+	//	new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide, mao: new THREE.VideoTexture( video )} ) );
+	//scene.add( plane );
+
+	scene.add( room, intersectionRoom, plane  );
 	objsToTest.push( intersectionRoom );
 
 	// USER INTERFACE
@@ -571,7 +613,7 @@ function updateButtons() {
 
 		intersect = raycast();
 
-		if ( intersect ) console.log( intersect.point );
+		//if ( intersect ) console.log( intersect.point );
 
 		// Position the little white dot at the end of the controller pointing ray
 		if ( intersect ) vrControl.setPointerAt( 0, intersect.point );
